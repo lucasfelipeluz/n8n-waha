@@ -1,0 +1,76 @@
+services:
+  redis: 
+    image: redis:latest
+    command: redis-server --requirepass default
+    environment:
+      REDIS_PASSWORD: default
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: default
+      POSTGRES_DB: default 
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    environment:
+      WEBHOOK_URL: http://host.docker.internal:5678
+      N8N_HOST: host.docker.internal
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      N8N_LOG_LEVEL: debug
+      N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE: true
+    volumes:
+      - n8n_data:/home/node/.n8n
+    ports:
+      - "5678:5678"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  waha:
+    image: devlikeapro/waha:arm-2025.6.4
+    environment:
+      WHATSAPP_HOOK_URL: http://host.docker.internal:5678/webhook/webhook
+      WHATSAPP_DEFAULT_ENGINE: GOWS
+      WHATSAPP_HOOK_EVENTS: message
+      # Configuração para URLs externas dos arquivos
+      WHATSAPP_WEBHOOK_URL: http://host.docker.internal:3000
+      WHATSAPP_API_URL: http://host.docker.internal:3000
+      # Configuração para servir arquivos via HTTP
+      WHATSAPP_SWAGGER_ENABLED: true
+      WHATSAPP_SWAGGER_URL: http://host.docker.internal:3000
+    volumes:
+      - waha_sessions:/app/.sessions
+      - waha_media:/app/.media
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
+  waha_sessions:
+  waha_media:
+  n8n_data:
+
+networks:
+  app-network:
+    driver: bridge
+ 
