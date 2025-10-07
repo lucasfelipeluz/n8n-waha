@@ -48,12 +48,6 @@ services:
       WHATSAPP_HOOK_URL: http://host.docker.internal:5678/webhook/webhook
       WHATSAPP_DEFAULT_ENGINE: GOWS
       WHATSAPP_HOOK_EVENTS: message
-      # Configuração para URLs externas dos arquivos
-      WHATSAPP_WEBHOOK_URL: http://host.docker.internal:3000
-      WHATSAPP_API_URL: http://host.docker.internal:3000
-      # Configuração para servir arquivos via HTTP
-      WHATSAPP_SWAGGER_ENABLED: true
-      WHATSAPP_SWAGGER_URL: http://host.docker.internal:3000
     volumes:
       - waha_sessions:/app/.sessions
       - waha_media:/app/.media
